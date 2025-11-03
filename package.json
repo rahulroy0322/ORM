@@ -1,0 +1,25 @@
+{
+  "name": "model",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc -b",
+    "check": "biome check",
+    "check:fix": "biome check --write",
+    "dev": "tsx --watch src/main.ts",
+    "start": "node dist/main.js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.6",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.0.1",
+    "@types/pg": "^8.15.6",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "joi": "^18.0.1",
+    "pg": "^8.16.3"
+  },
+  "license": "MIT"
+}
