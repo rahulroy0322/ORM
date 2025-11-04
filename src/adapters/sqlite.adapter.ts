@@ -1,26 +1,28 @@
-import Database from 'better-sqlite3';
-import settings from '../settings';
-import type { DatabaseAdapter } from './base.adapter';
+import type Database from 'better-sqlite3';
+import type { DatabaseAdapterType } from '../@types/adapter';
+import type { SQLiteConfigType } from '../@types/db.config';
 
-const SQLiteAdapter = (): DatabaseAdapter => {
+const SQLiteAdapter = (): DatabaseAdapterType => {
   let db: Database.Database | null = null;
 
-  const getDb = () => {
+  const connect: DatabaseAdapterType['connect'] = async (
+    config: SQLiteConfigType
+  ) => {
     if (db) {
-      return db;
+      return;
     }
-    db = new Database(settings.database.file);
-    return db;
+    const Database = (await import('better-sqlite3')).default;
+
+    db = new Database(config.fileName);
+    db.pragma('foreign_keys = ON');
+    return;
   };
 
-  const connect = async () => {
-    getDb();
-  };
-
-  const disconnect = async () => {
+  const disconnect: DatabaseAdapterType['disconnect'] = async () => {
     if (db) {
       db.close();
     }
+    db = null;
   };
 
   return {
@@ -31,7 +33,7 @@ const SQLiteAdapter = (): DatabaseAdapter => {
 
 export { SQLiteAdapter };
 
-// export class SQLiteAdapter implements DatabaseAdapter {
+// export class SQLiteAdapter implements DatabaseAdapterType {
 //   private db!: Database;
 
 //   constructor(private config: any) {}

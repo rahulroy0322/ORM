@@ -13,12 +13,12 @@ type MinMaxSchemaType = {
 type StrSchemaType = {
   type: 'string' | 'email';
   default?: string;
-} & MinMaxSchemaType;
+};
 
 type NumSchemaType = {
   type: 'number';
   default?: number;
-} & MinMaxSchemaType;
+};
 
 type BoolSchemaType = {
   type: 'bool';
@@ -42,22 +42,12 @@ type EnumSchemaType<F> = F extends {
     }
   : never;
 
-type Schema = Record<string, unknown>;
+type FieldSchemaType<F> = DefaultSchemaType &
+  (
+    | ((StrSchemaType | NumSchemaType) & MinMaxSchemaType)
+    | BoolSchemaType
+    | TimestampSchemaType
+    | EnumSchemaType<F>
+  );
 
-type FieldsType<F> =
-  | StrSchemaType
-  | BoolSchemaType
-  | NumSchemaType
-  | TimestampSchemaType
-  | EnumSchemaType<F>;
-
-type FieldSchemaType<F> = DefaultSchemaType & FieldsType<F>;
-
-export type {
-  FieldSchemaType,
-  Schema,
-  FieldsType,
-  NumSchemaType,
-  StrSchemaType,
-  EnumSchemaType,
-};
+export type { FieldSchemaType };

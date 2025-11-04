@@ -2,4 +2,6 @@ type Prettify<Obj extends Record<string, unknown>> = {
   [Key in keyof Obj]: Obj[Key];
 } & {};
 
-export type { Prettify };
+type SchemaType = Record<string, Record<string, unknown>>;
+
+export type { Prettify, SchemaType };

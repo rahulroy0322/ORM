@@ -1,5 +1,7 @@
-type DatabaseAdapter = {
-  connect(): Promise<void>;
+import type { DbConfigType } from './db.config';
+
+type DatabaseAdapterType = {
+  connect(config: DbConfigType): Promise<void>;
   disconnect(): Promise<void>;
   // query<T = any>(sql: string, params?: any[]): Promise<T[]>;
   // transaction?(fn: (trx: DatabaseAdapter) => Promise<any>): Promise<any>;
@@ -7,4 +9,4 @@ type DatabaseAdapter = {
   // migrate?(sql: string): Promise<void>;
 };
 
-export type { DatabaseAdapter };
+export type { DatabaseAdapterType };
