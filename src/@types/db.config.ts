@@ -1,21 +1,30 @@
 type SQLiteConfigType = {
   database: 'sqlite';
-  fileName: string;
+  path: string;
 };
 
-type MySQLConfigType =
-  | ({
-      database: 'mysql';
-    } & {
+type MySQLConfigType = {
+  database: 'mysql';
+} & (
+  | {
       host: string;
       port?: number;
       user: string;
       password: string;
-    })
+    }
   | {
       url: string;
-    };
+    }
+);
+
+type PostGreConfigType = {
+  database: 'postgre';
+  host: string;
+  port?: number;
+  user: string;
+  password: string;
+};
 
 type DbConfigType = SQLiteConfigType | MySQLConfigType;
 
-export type { SQLiteConfigType, DbConfigType };
+export type { SQLiteConfigType, DbConfigType ,PostGreConfigType};

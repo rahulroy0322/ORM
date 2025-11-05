@@ -1,16 +1,61 @@
 import { log } from 'node:console';
 import type { ModelType } from './@types/main';
+import { builder } from './adapters/builder';
+import { db } from './adapters/main';
 
-const main = () => {
-  const user = User.find({}, undefined, {
-    limit: 0,
-    orderBy: {
-      age: 'ASC',
-      email: 'DESC',
-    },
-  });
+const main = async () => {
+  log(
+    await User.create(
+      [
+        {
+          age: 25,
+          email: '',
+          uname: '',
+        },
+      ],
+      {
+        age: true,
+        password: true,
+      }
+    ),
 
-  log(user);
+    await User.find(
+      {
+        age: {
+          gt: 29,
+        },
+      },
+      {
+        age: true,
+        password: true,
+      }
+    ),
+    await User.update(
+      {
+        age: {
+          gt: 29,
+        },
+      },
+      {
+        age: 90,
+      },
+      {
+        age: true,
+        password: true,
+      }
+    ),
+    await User.destroy(
+      {
+        age: {
+          gt: 29,
+        },
+      },
+      {
+        age: true,
+        password: true,
+      }
+    )
+  );
 };
 
 const Model: ModelType = (table, _schema) => {
@@ -19,17 +64,21 @@ const Model: ModelType = (table, _schema) => {
   }
 
   return {
-    create() {
-      return Promise.resolve([]);
+    create(data, projection) {
+      return db.run(...builder.create(table, data as any, projection)) as any;
     },
-    find() {
-      return Promise.resolve([]);
+    find(filter, projection) {
+      return db.run(...builder.find(table, filter as any, projection)) as any;
     },
-    destroy() {
-      return Promise.resolve([]);
+    destroy(filter, projection) {
+      return db.run(
+        ...builder.destroy(table, filter as any, projection)
+      ) as any;
     },
-    update() {
-      return Promise.resolve([]);
+    update(filter, data, projection) {
+      return db.run(
+        ...builder.update(table, filter as any, data, projection)
+      ) as any;
     },
   };
 };

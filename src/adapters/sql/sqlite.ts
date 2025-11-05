@@ -1,0 +1,60 @@
+import type Database from 'better-sqlite3';
+import type { DatabaseAdapterType } from '../../@types/adapter';
+import type { SQLiteConfigType } from '../../@types/db.config';
+
+const SQLiteAdapter = (): DatabaseAdapterType => {
+  let db: Database.Database | null = null;
+
+  const connect: DatabaseAdapterType['connect'] = async (
+    config: SQLiteConfigType
+  ) => {
+    if (db) {
+      return;
+    }
+    const Database = (await import('better-sqlite3')).default;
+
+    db = new Database(config.path);
+    db.pragma('foreign_keys = ON');
+    return;
+  };
+
+  const disconnect: DatabaseAdapterType['disconnect'] = async () => {
+    if (db) {
+      db.close();
+    }
+    db = null;
+  };
+
+  // @ts-expect-error
+  const run: DatabaseAdapterType['run'] = (
+    sql,
+    params = undefined,
+    exec = false
+  ) => {
+    if (!db) {
+      // TODO! proper error!
+      throw new Error('please connect db first');
+    }
+
+    sql = sql.replace(/\$\d+/gi, '?');
+
+    if (exec) {
+      return db.exec(sql);
+    }
+
+    const stmt = db.prepare(sql);
+
+    const info = stmt.all(params);
+
+    // todo!
+    return info as unknown as string;
+  };
+
+  return {
+    connect,
+    disconnect,
+    run,
+  };
+};
+
+export { SQLiteAdapter };

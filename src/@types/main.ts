@@ -30,12 +30,14 @@ type ModelType = <const S extends Record<keyof S, FieldSchemaType<S[keyof S]>>>(
     filter: FilterModelType<S>,
     // TODO! atleast
     data: Partial<InferSchemaModelType<S>>,
-    projection?: P
+    projection?: P,
+    options?: OptionsModelType<S>
   ) => Promise<Prettify<ResWithProjectionType<S, P>>[]>;
 
   destroy: <P extends ProjectionType<S> | undefined = undefined>(
     filter: FilterModelType<S>,
-    projection?: P
+    projection?: P,
+    options?: OptionsModelType<S>
   ) => Promise<Prettify<ResWithProjectionType<S, P>>[]>;
 };
 

@@ -58,4 +58,6 @@ type FilterModelType<S extends SchemaType> = Partial<
   >
 >;
 
-export type { FilterModelType };
+type FilterKeysModelType<S extends SchemaType> = keyof FilterModelType<S>;
+
+export type { FilterModelType, FilterKeysModelType };
