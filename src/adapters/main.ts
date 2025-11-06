@@ -1,12 +1,12 @@
 import type { DatabaseAdapterType } from '../@types/adapter';
-import { SQLiteAdapter } from './sql/sqlite';
+import { MySqlAdapter } from './sql/mysql/main';
 
 let activeAdapter: DatabaseAdapterType | null = null;
 
 const getConnection = (): DatabaseAdapterType => {
   if (activeAdapter) return activeAdapter;
 
-  activeAdapter = SQLiteAdapter();
+  activeAdapter = MySqlAdapter();
 
   return activeAdapter;
 };

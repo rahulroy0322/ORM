@@ -17,7 +17,7 @@ const SQLBuilder = (): BuilderType => {
       table,
       `(${columns})`,
       'VALUES',
-      `${placeHolders.map((p) => `(${p.join(',')})`).join('')}`,
+      `${placeHolders.map((p) => `(${p.join(',')})`).join(',')}`,
     ];
 
     parts.push(

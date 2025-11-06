@@ -15,7 +15,6 @@ const SQLiteAdapter = (): DatabaseAdapterType => {
 
     db = new Database(config.path);
     db.pragma('foreign_keys = ON');
-    return;
   };
 
   const disconnect: DatabaseAdapterType['disconnect'] = async () => {
@@ -42,12 +41,7 @@ const SQLiteAdapter = (): DatabaseAdapterType => {
       return db.exec(sql);
     }
 
-    const stmt = db.prepare(sql);
-
-    const info = stmt.all(params);
-
-    // todo!
-    return info as unknown as string;
+    return db.prepare(sql).all(params);
   };
 
   return {

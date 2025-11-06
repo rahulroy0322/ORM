@@ -4,58 +4,17 @@ import { builder } from './adapters/builder';
 import { db } from './adapters/main';
 
 const main = async () => {
-  log(
-    await User.create(
-      [
-        {
-          age: 25,
-          email: '',
-          uname: '',
-        },
-      ],
-      {
-        age: true,
-        password: true,
-      }
-    ),
+  await db.connect({
+    engine: 'mysql',
+    database: 'orm',
+    host: 'localhost',
+    user: 'dev',
+    password: 'dev',
+  });
 
-    await User.find(
-      {
-        age: {
-          gt: 29,
-        },
-      },
-      {
-        age: true,
-        password: true,
-      }
-    ),
-    await User.update(
-      {
-        age: {
-          gt: 29,
-        },
-      },
-      {
-        age: 90,
-      },
-      {
-        age: true,
-        password: true,
-      }
-    ),
-    await User.destroy(
-      {
-        age: {
-          gt: 29,
-        },
-      },
-      {
-        age: true,
-        password: true,
-      }
-    )
-  );
+  const users = User.find({});
+
+  log(users);
 };
 
 const Model: ModelType = (table, _schema) => {
