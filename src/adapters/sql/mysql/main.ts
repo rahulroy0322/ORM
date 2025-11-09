@@ -85,10 +85,14 @@ const MySqlAdapter = (
     return await exec(secondQuery.sql, secondQuery.values);
   };
 
+  const raw: DatabaseAdapterType['raw'] = (command) =>
+    (pool as Pool).execute(command);
+
   return {
     connect,
     disconnect,
     run,
+    raw,
   };
 };
 

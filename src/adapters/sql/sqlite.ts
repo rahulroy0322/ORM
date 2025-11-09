@@ -1,11 +1,11 @@
-import type Database from 'better-sqlite3';
+import type { Database } from 'better-sqlite3';
 import type { DatabaseAdapterType } from '../../@types/adapter';
 import type { SQLiteConfigType } from '../../@types/db.config';
 
 const SQLiteAdapter = (
   config: Omit<SQLiteConfigType, 'engine'>
 ): DatabaseAdapterType => {
-  let db: Database.Database | null = null;
+  let db: Database | null = null;
 
   const connect: DatabaseAdapterType['connect'] = async () => {
     if (db) {
@@ -40,12 +40,12 @@ const SQLiteAdapter = (
     if (exec) {
       return db.exec(sql);
     }
-    
+
     return db.prepare(sql).all(params);
   };
 
   const raw: DatabaseAdapterType['raw'] = async (command) =>
-    (db as any).exec(command);
+    (db as Database).exec(command);
 
   return {
     connect,

@@ -41,10 +41,13 @@ const PostGreAdapter = (
     return (await pool.query(sql, params)).rows;
   };
 
+  const raw: DatabaseAdapterType['raw'] =  (command) => (pool as Pool).query(command);
+
   return {
     connect,
     disconnect,
     run,
+    raw,
   };
 };
 
