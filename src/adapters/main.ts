@@ -6,23 +6,34 @@ import { SQLiteAdapter } from './sql/sqlite';
 
 let activeAdapter: DatabaseAdapterType | null = null;
 
-const getConnection = (config: DbConfigType): DatabaseAdapterType => {
-  if (activeAdapter) return activeAdapter;
-
+const getAdapter = (config: DbConfigType): DatabaseAdapterType => {
   switch (config.engine) {
     case 'sqlite':
-      activeAdapter = SQLiteAdapter(config);
-      break;
+      return SQLiteAdapter(config);
     case 'mysql':
-      activeAdapter = MySqlAdapter(config);
-      break;
+      return MySqlAdapter(config);
     case 'postgre':
-      activeAdapter = PostGreAdapter(config);
-      break;
+      return PostGreAdapter(config);
     default:
       // TODO! proper error!
       throw new Error();
   }
+};
+
+const getConnection = (config: DbConfigType): DatabaseAdapterType => {
+  if (activeAdapter) return activeAdapter;
+
+  const currentAdapter = getAdapter(config);
+
+  activeAdapter = {
+    ...currentAdapter,
+    raw: (command: string) => {
+      console.warn(`WARNING: row is where you take the full responsibility`, {
+        command,
+      });
+      return currentAdapter.raw(command);
+    },
+  };
 
   return activeAdapter;
 };

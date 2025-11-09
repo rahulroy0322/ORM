@@ -135,20 +135,31 @@ const SQLCompiler = (): DatabaseCompiler => {
     const params: (string | number)[] = [];
 
     if (options.orderBy) {
-      parts.push(
-        `ORDER BY $${whereParamsLength + params.length + 1} $${params.length + 2}`
-      );
-      params.push(options.orderBy[0], options.orderBy[1]);
+      const orderByFields = Object.keys(options.orderBy);
+
+      parts.push('ORDER', 'BY');
+
+      if (orderByFields.length) {
+        const _orderFields: string[] = [];
+        for (const key of orderByFields) {
+          _orderFields.push(
+            `${key.toString()} ${
+              options.orderBy[key] === 'ASC' ? 'ASC' : 'DESC'
+            }`
+          );
+        }
+        parts.push(_orderFields.join(','));
+      }
     }
 
     if (options.limit) {
       parts.push(`LIMIT $${whereParamsLength + params.length + 1}`);
       params.push(options.limit);
-    }
 
-    if (options.offset) {
-      parts.push(`OFFSET $${whereParamsLength + params.length + 1}`);
-      params.push(options.offset);
+      if (options.skip) {
+        parts.push(`OFFSET $${whereParamsLength + params.length + 1}`);
+        params.push(options.skip);
+      }
     }
 
     return [parts.join(' '), params];

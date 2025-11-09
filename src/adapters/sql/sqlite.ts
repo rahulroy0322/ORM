@@ -40,14 +40,18 @@ const SQLiteAdapter = (
     if (exec) {
       return db.exec(sql);
     }
-
+    
     return db.prepare(sql).all(params);
   };
+
+  const raw: DatabaseAdapterType['raw'] = async (command) =>
+    (db as any).exec(command);
 
   return {
     connect,
     disconnect,
     run,
+    raw,
   };
 };
 

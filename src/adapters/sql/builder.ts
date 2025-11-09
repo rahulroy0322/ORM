@@ -30,9 +30,10 @@ const SQLBuilder = (): BuilderType => {
 
   const find: BuilderType['find'] = (
     table,
-    filter,
+    filter = {},
     // @ts-expect-error
-    projection = {}
+    projection = {},
+    options = {}
   ) => {
     const columns = !Object.keys(projection).length
       ? '*'
@@ -42,11 +43,21 @@ const SQLBuilder = (): BuilderType => {
 
     const parts = ['SELECT', columns, 'FROM', table];
 
-    if (Object.keys(filter || {}).length) {
+    if (Object.keys(filter).length) {
       const [filterSql, filterParams] = compiler.filter(filter);
 
       parts.push('WHERE', filterSql);
       params.push(...filterParams);
+    }
+
+    if (Object.keys(options).length) {
+      const [optionsSql, optionsParams] = compiler.options(
+        params.length,
+        options
+      );
+
+      parts.push(optionsSql);
+      params.push(...optionsParams);
     }
 
     return [parts.join(' '), params];

@@ -5,15 +5,25 @@ import { db } from './adapters/main';
 
 const main = async () => {
   await db.connect();
-
   log(
     await User.find(
       {},
       {
-        age: true,
+
+      },
+      {
+        limit: 2,
+        skip: 2,
+        orderBy: {
+          age: 'DESC',
+          uname: 'ASC',
+        },
       }
     )
   );
+
+  /*
+   */
 };
 
 const Model: ModelType = (table, _schema) => {
@@ -25,8 +35,10 @@ const Model: ModelType = (table, _schema) => {
     create(data, projection) {
       return db.run(...builder.create(table, data as any, projection)) as any;
     },
-    find(filter, projection) {
-      return db.run(...builder.find(table, filter as any, projection)) as any;
+    find(filter, projection, options) {
+      return db.run(
+        ...builder.find(table, filter as any, projection, options)
+      ) as any;
     },
     destroy(filter, projection) {
       return db.run(

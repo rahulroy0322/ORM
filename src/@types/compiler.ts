@@ -1,4 +1,5 @@
 import type { FilterModelType } from './filter';
+import { OptionsModelType } from './options';
 import type { SchemaType } from './utils';
 
 type DatabaseCompiler = {
@@ -15,11 +16,7 @@ type DatabaseCompiler = {
 
   options(
     whereParamsLength: number,
-    options: Partial<{
-      limit: number;
-      offset: number;
-      orderBy: [string, 'ASC' | 'DESC'];
-    }>
+    options: OptionsModelType<SchemaType>
   ): [string, unknown[]];
 
   update(data: Record<string, unknown>): [string, unknown[]];
