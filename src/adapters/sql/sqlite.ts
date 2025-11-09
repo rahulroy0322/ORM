@@ -2,12 +2,12 @@ import type Database from 'better-sqlite3';
 import type { DatabaseAdapterType } from '../../@types/adapter';
 import type { SQLiteConfigType } from '../../@types/db.config';
 
-const SQLiteAdapter = (): DatabaseAdapterType => {
+const SQLiteAdapter = (
+  config: Omit<SQLiteConfigType, 'engine'>
+): DatabaseAdapterType => {
   let db: Database.Database | null = null;
 
-  const connect: DatabaseAdapterType['connect'] = async (
-    config: SQLiteConfigType
-  ) => {
+  const connect: DatabaseAdapterType['connect'] = async () => {
     if (db) {
       return;
     }

@@ -1,9 +1,7 @@
-import type { DbConfigType } from './db.config';
-
 type DatabaseAdapterType = {
-  connect(config: DbConfigType): Promise<void>;
+  connect(): Promise<void>;
   disconnect(): Promise<void>;
-  run(sql: string, params?: unknown[]): unknown[];
+  run(sql: string, params?: unknown[]): Promise<unknown[]>;
   // query<T = any>(sql: string, params?: any[]): Promise<T[]>;
   // transaction?(fn: (trx: DatabaseAdapter) => Promise<any>): Promise<any>;
   // raw?(command: string): Promise<any>;

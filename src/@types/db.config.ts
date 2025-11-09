@@ -20,12 +20,18 @@ type MySQLConfigType = {
 
 type PostGreConfigType = {
   engine: 'postgre';
-  database: string;
-  host: string;
-  port?: number;
-  user: string;
-  password: string;
-};
+} & (
+  | {
+      database: string;
+      host: string;
+      port?: number;
+      user: string;
+      password: string;
+    }
+  | {
+      url: string;
+    }
+);
 
 type DbConfigType = SQLiteConfigType | MySQLConfigType | PostGreConfigType;
 

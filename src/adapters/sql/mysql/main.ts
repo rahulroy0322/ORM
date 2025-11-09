@@ -3,23 +3,22 @@ import type { DatabaseAdapterType } from '../../../@types/adapter';
 import type { MySQLConfigType } from '../../../@types/db.config';
 import { query } from './query';
 
-const MySqlAdapter = (): DatabaseAdapterType => {
+const MySqlAdapter = (
+  config: Omit<MySQLConfigType, 'engine'>
+): DatabaseAdapterType => {
   let pool: Pool | null = null;
 
-  const connect: DatabaseAdapterType['connect'] = async ({
-    engine: _,
-    ...other
-  }: MySQLConfigType) => {
+  const connect: DatabaseAdapterType['connect'] = async () => {
     if (pool) {
       return;
     }
     const { createPool } = await import('mysql2/promise');
 
-    if ('url' in other) {
-      pool = createPool(other.url);
+    if ('url' in config) {
+      pool = createPool(config.url as string);
     } else {
-      createPool({
-        ...other,
+      pool = createPool({
+        ...config,
         waitForConnections: true,
         connectionLimit: 10,
       });
@@ -36,7 +35,6 @@ const MySqlAdapter = (): DatabaseAdapterType => {
   // biome-ignore lint/style/noNonNullAssertion: it will be there
   const exec = (sql: string, values: unknown[]) => pool!.query(sql, values);
 
-  // @ts-expect-error
   const run: DatabaseAdapterType['run'] = async (
     sql,
     params = [],
@@ -49,7 +47,7 @@ const MySqlAdapter = (): DatabaseAdapterType => {
     sql = sql.replace(/\$\d+/gi, '?');
 
     if (internal) {
-      return [];
+      return await pool.execute(sql, params);
     }
 
     const queryData = query(sql, params as string[]);

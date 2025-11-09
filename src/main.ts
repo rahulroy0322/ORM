@@ -4,17 +4,16 @@ import { builder } from './adapters/builder';
 import { db } from './adapters/main';
 
 const main = async () => {
-  await db.connect({
-    engine: 'mysql',
-    database: 'orm',
-    host: 'localhost',
-    user: 'dev',
-    password: 'dev',
-  });
+  await db.connect();
 
-  const users = User.find({});
-
-  log(users);
+  log(
+    await User.find(
+      {},
+      {
+        age: true,
+      }
+    )
+  );
 };
 
 const Model: ModelType = (table, _schema) => {
