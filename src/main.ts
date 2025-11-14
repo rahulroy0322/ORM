@@ -1,55 +1,56 @@
-import { log } from 'node:console';
 import type { ModelType } from './@types/main';
-import { builder } from './adapters/builder';
 import { db } from './adapters/main';
 
 const main = async () => {
-  await db.connect();
-  log(
-    await User.find(
-      {},
-      {
+  // await db.connect();
 
-      },
-      {
-        limit: 2,
-        skip: 2,
-        orderBy: {
-          age: 'DESC',
-          uname: 'ASC',
-        },
-      }
-    )
-  );
+  const _y = Math.random();
 
-  /*
-   */
+  const user = (await User.find({}))[0];
+
+  user?._id;
 };
 
-const Model: ModelType = (table, _schema) => {
+const getIdSchema = () =>
+  ({
+    type: 'pk',
+    default: () => Math.random().toFixed(4).toString(),
+  }) as const;
+
+const Model: ModelType = (table, schema, options = {}) => {
   if (!table.endsWith('s')) {
     table = table.concat('s');
   }
 
+  (schema as any)._id = getIdSchema();
+
+  if (options.timestamp) {
+    schema = {
+      ...schema,
+      createdAt: {
+        type: 'timestamp',
+        default: () => new Date(),
+      },
+      updatedAt: {
+        type: 'timestamp',
+        default: () => new Date(),
+        onupdate: true,
+      },
+    };
+  }
+
   return {
-    create(data, projection) {
-      return db.run(...builder.create(table, data as any, projection)) as any;
-    },
-    find(filter, projection, options) {
-      return db.run(
-        ...builder.find(table, filter as any, projection, options)
-      ) as any;
-    },
-    destroy(filter, projection) {
-      return db.run(
-        ...builder.destroy(table, filter as any, projection)
-      ) as any;
-    },
-    update(filter, data, projection) {
-      return db.run(
-        ...builder.update(table, filter as any, data, projection)
-      ) as any;
-    },
+    create: (data, projection) =>
+      db.create(table, data as any, projection) as any,
+
+    find: (filter, projection, options) =>
+      db.find(table, filter as any, projection, options) as any,
+
+    destroy: (filter, options) =>
+      db.destroy(table, filter as any, options) as any,
+
+    update: (filter, data, projection, options) =>
+      db.update(table, filter as any, data, projection, options) as any,
   };
 };
 

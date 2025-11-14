@@ -1,3 +1,4 @@
+// Sql
 type SQLiteConfigType = {
   engine: 'sqlite';
   path: string;
@@ -33,11 +34,24 @@ type PostGreConfigType = {
     }
 );
 
-type DbConfigType = SQLiteConfigType | MySQLConfigType | PostGreConfigType;
+// No Sql
+type MongoConfigType = {
+  engine: 'mongo';
+  uri: string;
+  db: string;
+};
+
+// Base
+type DbConfigType =
+  | SQLiteConfigType
+  | MySQLConfigType
+  | PostGreConfigType
+  | MongoConfigType;
 
 export type {
   SQLiteConfigType,
   DbConfigType,
   PostGreConfigType,
   MySQLConfigType,
+  MongoConfigType,
 };

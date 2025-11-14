@@ -1,12 +1,14 @@
 import type { Pool } from 'mysql2/promise';
 import type { DatabaseAdapterType } from '../../../@types/adapter';
 import type { MySQLConfigType } from '../../../@types/db.config';
+import { SQLBuilder } from '../builder';
 import { query } from './query';
 
 const MySqlAdapter = (
   config: Omit<MySQLConfigType, 'engine'>
 ): DatabaseAdapterType => {
   let pool: Pool | null = null;
+  const builder = SQLBuilder();
 
   const connect: DatabaseAdapterType['connect'] = async () => {
     if (pool) {
@@ -35,11 +37,7 @@ const MySqlAdapter = (
   // biome-ignore lint/style/noNonNullAssertion: it will be there
   const exec = (sql: string, values: unknown[]) => pool!.query(sql, values);
 
-  const run: DatabaseAdapterType['run'] = async (
-    sql,
-    params = [],
-    internal = false
-  ) => {
+  const run = async (sql: string, params: unknown[] = [], internal = false) => {
     if (!pool) {
       // TODO! proper error!
       throw new Error('please connect db first');
@@ -85,13 +83,65 @@ const MySqlAdapter = (
     return await exec(secondQuery.sql, secondQuery.values);
   };
 
-  const raw: DatabaseAdapterType['raw'] = (command) =>
-    (pool as Pool).execute(command);
+  const find: DatabaseAdapterType['find'] = async (
+    table,
+    filter,
+    projection = {},
+    options
+  ) => {
+    const [sql, params] = builder.find(table, filter, projection, options);
+
+    return run(sql, params) as any;
+  };
+
+  const create: DatabaseAdapterType['create'] = async (
+    table,
+    data,
+    projection = {}
+  ) => {
+    const [sql, params] = builder.create(table, data, projection);
+
+    return run(sql, params) as any;
+  };
+
+  const update: DatabaseAdapterType['update'] = async (
+    table,
+    filter,
+    data,
+    projection
+    // TODO!
+    // options
+  ) => {
+    const [sql, params] = builder.update(
+      table,
+      filter,
+      data,
+      projection
+      // options
+    );
+
+    return run(sql, params) as any;
+  };
+
+  const destroy: DatabaseAdapterType['destroy'] = async (
+    table,
+    filter,
+    options
+  ) => {
+    const [sql, params] = builder.destroy(table, filter, options);
+
+    return run(sql, params) as any;
+  };
+
+  const raw: DatabaseAdapterType['raw'] = pool;
 
   return {
     connect,
     disconnect,
-    run,
+    create,
+    update,
+    destroy,
+    find,
     raw,
   };
 };

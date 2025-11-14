@@ -1,7 +1,7 @@
 import type { InferSchemaModelType } from './field';
 import type { FilterModelType } from './filter';
 import type { CreateInputType } from './input';
-import { OptionsModelType } from './options';
+import type { OptionsModelType } from './options';
 import type { ProjectionType } from './projection';
 import type { SchemaType } from './utils';
 
@@ -27,11 +27,10 @@ type BuilderType = {
     // options?: OptionsModelType<S>
   ): [string, unknown[]];
 
-  destroy<P extends ProjectionType<SchemaType> | undefined = undefined>(
+  destroy(
     table: string,
     filter: FilterModelType<SchemaType>,
-    projection?: P
-    // options?: OptionsModelType<S>
+    options?: OptionsModelType<SchemaType>
   ): [string, unknown[]];
 };
 

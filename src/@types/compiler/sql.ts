@@ -1,6 +1,6 @@
-import type { FilterModelType } from './filter';
-import { OptionsModelType } from './options';
-import type { SchemaType } from './utils';
+import type { FilterModelType } from '../filter';
+import type { OptionsModelType } from '../options';
+import type { SchemaType } from '../utils';
 
 type DatabaseCompiler = {
   columns(obj: Record<string, unknown>): string;

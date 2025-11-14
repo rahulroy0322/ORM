@@ -1,10 +1,7 @@
-import type { DatabaseCompiler } from '../../../@types/compiler';
-import type { InferSchemaModelType } from '../../../@types/field';
-import type {
-  FilterKeysModelType,
-  FilterModelType,
-} from '../../../@types/filter';
-import type { SchemaType } from '../../../@types/utils';
+import type { DatabaseCompiler } from '../../@types/compiler/sql';
+import type { InferSchemaModelType } from '../../@types/field';
+import type { FilterKeysModelType, FilterModelType } from '../../@types/filter';
+import type { SchemaType } from '../../@types/utils';
 
 const filterImpl = <S extends SchemaType>(
   filter: Partial<FilterModelType<S>>,
@@ -119,15 +116,7 @@ const SQLCompiler = (): DatabaseCompiler => {
       return '*';
     }
 
-    const keys: string[] = [];
-
-    for (const [key, entry] of entries) {
-      if (entry) {
-        keys.push(key);
-      }
-    }
-
-    return keys.join(',');
+    return columns(fields);
   };
 
   const options: DatabaseCompiler['options'] = (whereParamsLength, options) => {
@@ -195,7 +184,9 @@ const SQLCompiler = (): DatabaseCompiler => {
   };
 
   const columns: DatabaseCompiler['columns'] = (obj) =>
-    Object.keys(obj).join(',');
+    Object.keys(obj)
+      .filter((key) => obj[key])
+      .join(',');
 
   return {
     filter,

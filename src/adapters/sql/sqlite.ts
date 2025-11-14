@@ -1,11 +1,13 @@
 import type { Database } from 'better-sqlite3';
 import type { DatabaseAdapterType } from '../../@types/adapter';
 import type { SQLiteConfigType } from '../../@types/db.config';
+import { SQLBuilder } from './builder';
 
 const SQLiteAdapter = (
   config: Omit<SQLiteConfigType, 'engine'>
 ): DatabaseAdapterType => {
   let db: Database | null = null;
+  const builder = SQLBuilder();
 
   const connect: DatabaseAdapterType['connect'] = async () => {
     if (db) {
@@ -24,33 +26,83 @@ const SQLiteAdapter = (
     db = null;
   };
 
-  // @ts-expect-error
-  const run: DatabaseAdapterType['run'] = (
-    sql,
-    params = undefined,
+  const run = (
+    sql: string,
+    params: unknown[] | undefined = undefined,
     exec = false
-  ) => {
+  ): unknown[] => {
     if (!db) {
       // TODO! proper error!
       throw new Error('please connect db first');
     }
-
     sql = sql.replace(/\$\d+/gi, '?');
-
     if (exec) {
+      // @ts-expect-error this is just for migrate
       return db.exec(sql);
     }
 
     return db.prepare(sql).all(params);
   };
 
-  const raw: DatabaseAdapterType['raw'] = async (command) =>
-    (db as Database).exec(command);
+  const find: DatabaseAdapterType['find'] = async (
+    table,
+    filter,
+    projection = {},
+    options
+  ) => {
+    const [sql, params] = builder.find(table, filter, projection, options);
+
+    return run(sql, params) as any;
+  };
+
+  const create: DatabaseAdapterType['create'] = async (
+    table,
+    data,
+    projection = {}
+  ) => {
+    const [sql, params] = builder.create(table, data, projection);
+
+    return run(sql, params) as any;
+  };
+
+  const update: DatabaseAdapterType['update'] = async (
+    table,
+    filter,
+    data,
+    projection
+    // TODO!
+    // options
+  ) => {
+    const [sql, params] = builder.update(
+      table,
+      filter,
+      data,
+      projection
+      // options
+    );
+
+    return run(sql, params) as any;
+  };
+
+  const destroy: DatabaseAdapterType['destroy'] = async (
+    table,
+    filter,
+    options
+  ) => {
+    const [sql, params] = builder.destroy(table, filter, options);
+
+    return run(sql, params) as any;
+  };
+
+  const raw = db;
 
   return {
     connect,
     disconnect,
-    run,
+    create,
+    update,
+    destroy,
+    find,
     raw,
   };
 };

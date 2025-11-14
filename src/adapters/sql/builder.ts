@@ -1,7 +1,9 @@
 import type { BuilderType } from '../../@types/builder';
-import { compiler } from './compiler/main';
+import { SQLCompiler } from './compiler';
 
 const SQLBuilder = (): BuilderType => {
+  const compiler = SQLCompiler();
+
   const create: BuilderType['create'] = (
     table,
     data,
@@ -22,7 +24,12 @@ const SQLBuilder = (): BuilderType => {
 
     parts.push(
       'RETURNING',
-      !Object.keys(projection).length ? '*' : compiler.columns(projection)
+      !Object.keys(projection).length
+        ? '*'
+        : compiler.columns({
+            ...projection,
+            _id: true,
+          })
     );
 
     return [parts.join(' '), valueParams];
@@ -37,7 +44,10 @@ const SQLBuilder = (): BuilderType => {
   ) => {
     const columns = !Object.keys(projection).length
       ? '*'
-      : compiler.columns(projection);
+      : compiler.columns({
+          ...projection,
+          _id: true,
+        });
 
     const params: unknown[] = [];
 
@@ -85,19 +95,17 @@ const SQLBuilder = (): BuilderType => {
 
     const columns = !Object.keys(projection).length
       ? '*'
-      : compiler.columns(projection);
+      : compiler.columns({
+          ...projection,
+          _id: true,
+        });
 
     parts.push('RETURNING', columns);
 
     return [parts.join(' '), params];
   };
 
-  const destroy: BuilderType['destroy'] = (
-    table,
-    filter,
-    // @ts-expect-error
-    projection = {}
-  ) => {
+  const destroy: BuilderType['destroy'] = (table, filter, options = {}) => {
     const params: unknown[] = [];
 
     const parts = ['DELETE', 'FROM', table];
@@ -109,11 +117,17 @@ const SQLBuilder = (): BuilderType => {
       params.push(...filterParams);
     }
 
-    const columns = !Object.keys(projection).length
-      ? '*'
-      : compiler.columns(projection);
+    if (Object.keys(options).length) {
+      const [optionsSql, optionsParams] = compiler.options(
+        params.length,
+        options
+      );
 
-    parts.push('RETURNING', columns);
+      parts.push(optionsSql);
+      params.push(...optionsParams);
+    }
+
+    parts.push('RETURNING', '*');
 
     return [parts.join(' '), params];
   };
