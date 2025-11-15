@@ -1,11 +1,21 @@
 {
   "name": "model",
   "version": "0.0.0",
+  "main": "./dist/main.js",
+  "exports": "./dist/main.js",
+  "bin": {
+    "orm": "./bin/main.js"
+  },
   "scripts": {
     "build": "tsc -b",
+    "build:all": "npm run build&&npm run build:cli",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "cli":"node bin/main.js",
     "check": "biome check",
     "check:fix": "biome check --write",
-    "dev": "tsx --watch src/main.ts",
+    "dev": "TASK=db tsx --watch src/runner.ts",
+    "dev:cli": "ENV=dev tsx --tsconfig tsconfig.cli.json --watch cli/main.ts",
+    "migrate": "TASK=migrate tsx --watch src/runner.ts",
     "start": "node dist/main.js"
   },
   "devDependencies": {
@@ -18,10 +28,12 @@
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",
+    "chalk": "^5.6.2",
     "joi": "^18.0.1",
     "mongodb": "^7.0.0",
     "mysql2": "^3.15.3",
     "pg": "^8.16.3"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c"
 }

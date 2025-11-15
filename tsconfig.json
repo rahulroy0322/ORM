@@ -1,26 +1,11 @@
 {
+  "extends":"./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "module": "es2022",
+    "moduleResolution": "bundler",
+
     "rootDir": "./src",
-    "resolveJsonModule": true,
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "removeComments": true,
-    "noEmitOnError": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "skipLibCheck": true
+    "outDir": "./dist"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

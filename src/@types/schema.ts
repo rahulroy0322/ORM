@@ -50,4 +50,4 @@ type FieldSchemaType<F> = DefaultSchemaType &
     | EnumSchemaType<F>
   );
 
-export type { FieldSchemaType };
+export type { FieldSchemaType, DefaultSchemaType, EnumSchemaType };

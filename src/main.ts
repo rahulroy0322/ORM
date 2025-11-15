@@ -1,16 +1,6 @@
 import type { ModelType } from './@types/main';
 import { db } from './adapters/main';
 
-const main = async () => {
-  // await db.connect();
-
-  const _y = Math.random();
-
-  const user = (await User.find({}))[0];
-
-  user?._id;
-};
-
 const getIdSchema = () =>
   ({
     type: 'pk',
@@ -39,6 +29,11 @@ const Model: ModelType = (table, schema, options = {}) => {
     };
   }
 
+  const migration = () => ({
+    schema,
+    table,
+  });
+
   return {
     create: (data, projection) =>
       db.create(table, data as any, projection) as any,
@@ -51,6 +46,8 @@ const Model: ModelType = (table, schema, options = {}) => {
 
     update: (filter, data, projection, options) =>
       db.update(table, filter as any, data, projection, options) as any,
+
+    migration,
   };
 };
 
@@ -68,22 +65,4 @@ const Model: ModelType = (table, schema, options = {}) => {
 // };
 // const User = Model<UserType>('users', {
 
-const User = Model('users', {
-  uname: { type: 'string', min: 2, default: '', unique: true, required: true },
-  email: { type: 'email', unique: true, required: true },
-  password: { type: 'string', required: false, select: false },
-  age: { type: 'number', default: 11, min: 10, max: 100, required: true },
-  gender: {
-    type: 'enum',
-    values: ['male', 'female', 'other'],
-    default: 'female',
-  },
-  isVerified: { type: 'bool', default: false },
-  verifiedAt: { type: 'timestamp', default: 'now' },
-  isActive: {
-    type: 'bool',
-    default: false,
-  },
-});
-
-main();
+export { Model };
